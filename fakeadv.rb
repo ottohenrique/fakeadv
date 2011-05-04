@@ -1,6 +1,8 @@
 #encoding: utf-8
 
-require 'open-uri'
+require 'net/http'
+require 'uri'
+require 'rubygems'
 require 'hpricot'
 
 user_login = "mrinaldi"
@@ -8,6 +10,13 @@ user_passwd = "!@#QWEasd"
 
 adv_url = 'adv.ir7.com.br'
 
-res = Net::HTTP.start(adv_url) do |http|
-  http.post()
-end
+http = Net::HTTP.new adv_url
+resp, data = http.get '/admin'
+
+session_id = resp['set-cookie'].gsub /;.*$/,''
+
+data = 'usuario.login=mrinaldi&usuario.senha=!@#QWEasd'
+
+http.post '/login', data, {'Cookie'=>session_id}
+
+
